@@ -14,6 +14,7 @@ engine = create_async_engine(
     max_overflow=10,
     pool_recycle=300,             # Recycle connections every 5 min (Neon idle timeout)
     pool_pre_ping=True,           # Verify connections before use
+    connect_args={"ssl": "require"},  # asyncpg needs SSL passed here, NOT in URL
 )
 
 # Session factory
