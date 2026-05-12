@@ -72,3 +72,5 @@ class Alert(Base):
 
     def __repr__(self) -> str:
         return f"<Alert id={self.id} type={self.alert_type} severity={self.severity}>"
+
+        
