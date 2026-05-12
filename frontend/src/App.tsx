@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Camera, AlertTriangle, CheckCircle2, Shield, Loader2, PlayCircle, Video } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Shield, Loader2, PlayCircle, Video } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const API_URL = 'http://localhost:8000/api/v1';
@@ -12,7 +12,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [streamActive, setStreamActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(10);
-  
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
@@ -31,9 +31,9 @@ function App() {
         setError("Please allow camera access in your browser to use live detection.");
       }
     };
-    
+
     startCamera();
-    
+
     return () => {
       // Cleanup stream on unmount
       if (videoRef.current && videoRef.current.srcObject) {
@@ -47,25 +47,25 @@ function App() {
     try {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       const ctx = new AudioContext();
-      
+
       const playBeep = (timeOffset: number) => {
         const osc = ctx.createOscillator();
         const gainNode = ctx.createGain();
-        
+
         osc.type = 'square';
         osc.frequency.setValueAtTime(880, ctx.currentTime + timeOffset);
         osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + timeOffset + 0.15);
-        
+
         gainNode.gain.setValueAtTime(0.1, ctx.currentTime + timeOffset);
         gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + timeOffset + 0.15);
-        
+
         osc.connect(gainNode);
         gainNode.connect(ctx.destination);
-        
+
         osc.start(ctx.currentTime + timeOffset);
         osc.stop(ctx.currentTime + timeOffset + 0.15);
       };
-      
+
       playBeep(0);
       playBeep(0.2);
       playBeep(0.4);
@@ -76,36 +76,36 @@ function App() {
 
   const startCapture = () => {
     if (!videoRef.current || !videoRef.current.srcObject) return;
-    
+
     setResults(null);
     setIsCapturing(true);
     setTimeLeft(10);
     chunksRef.current = [];
-    
+
     const stream = videoRef.current.srcObject as MediaStream;
     const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
     mediaRecorderRef.current = mediaRecorder;
-    
+
     mediaRecorder.ondataavailable = (e) => {
       if (e.data.size > 0) {
         chunksRef.current.push(e.data);
       }
     };
-    
+
     mediaRecorder.onstop = async () => {
       setIsCapturing(false);
       setIsAnalyzing(true);
-      
+
       const blob = new Blob(chunksRef.current, { type: 'video/webm' });
       const formData = new FormData();
       formData.append('file', blob, 'webcam-capture.webm');
-      
+
       try {
         // Upload directly to the standard /analyze endpoint!
         const response = await axios.post(`${API_URL}/video/analyze?sample_fps=2`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        
+
         setResults(response.data);
         if (response.data.alerts_count > 0) {
           playAlertSound();
@@ -116,9 +116,9 @@ function App() {
         setIsAnalyzing(false);
       }
     };
-    
+
     mediaRecorder.start();
-    
+
     // Stop recording after 10 seconds
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
@@ -137,7 +137,7 @@ function App() {
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-200 p-8 font-sans selection:bg-indigo-500/30">
       <div className="max-w-5xl mx-auto space-y-8">
-        
+
         {/* Header */}
         <header className="flex items-center justify-between pb-6 border-b border-slate-800">
           <div className="flex items-center space-x-3">
@@ -153,21 +153,21 @@ function App() {
 
         {/* Main Action Area */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-[#1e293b] rounded-2xl p-6 border border-slate-800 shadow-xl relative overflow-hidden">
               <h2 className="text-xl font-semibold text-white mb-2">Live Detection Test</h2>
               <p className="text-slate-400 text-sm mb-6">
-                Your browser is showing the live webcam feed. Click start to record a 10-second clip and send it to the AI.
+                Your browser is showing the live webcam feed. Click start to record a 10-second clip.
               </p>
-              
+
               {/* Live Video Preview Player */}
               <div className="relative rounded-xl overflow-hidden bg-slate-900 border border-slate-700 mb-6 aspect-video">
-                <video 
-                  ref={videoRef} 
-                  autoPlay 
-                  playsInline 
-                  muted 
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
                   className="w-full h-full object-cover transform scale-x-[-1]"
                 />
                 {!streamActive && (
@@ -183,8 +183,8 @@ function App() {
                   </div>
                 )}
               </div>
-              
-              <button 
+
+              <button
                 onClick={startCapture}
                 disabled={isCapturing || isAnalyzing || !streamActive}
                 className="w-full flex items-center justify-center space-x-2 bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-700 disabled:text-slate-400 text-white py-3 px-4 rounded-xl font-medium transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
@@ -197,7 +197,7 @@ function App() {
                 ) : isAnalyzing ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>AI is analyzing...</span>
+                    <span>Analyzing...</span>
                   </>
                 ) : (
                   <>
@@ -220,7 +220,7 @@ function App() {
           <div className="lg:col-span-2 space-y-6">
             <AnimatePresence mode="popLayout">
               {isAnalyzing && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
@@ -230,13 +230,13 @@ function App() {
                     <div className="absolute -inset-4 bg-indigo-500/20 rounded-full blur-xl animate-pulse"></div>
                     <Shield className="w-12 h-12 text-indigo-400 animate-pulse relative z-10" />
                   </div>
-                  <p className="mt-6 text-slate-300 font-medium">Running YOLOv8 inference...</p>
+                  <p className="mt-6 text-slate-300 font-medium">Running detection inference...</p>
                   <p className="text-sm text-slate-500 mt-2">Uploading and analyzing frames.</p>
                 </motion.div>
               )}
 
               {results && !isAnalyzing && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-6"
@@ -246,10 +246,10 @@ function App() {
                     <StatCard title="Frames Analyzed" value={results.analysis.frames_analyzed} />
                     <StatCard title="Duration" value={`${results.analysis.duration_seconds}s`} />
                     <StatCard title="Classes Found" value={results.analysis.unique_classes_detected.length} />
-                    <StatCard 
-                      title="Alerts Generated" 
-                      value={results.alerts_count} 
-                      alert={results.alerts_count > 0} 
+                    <StatCard
+                      title="Alerts Generated"
+                      value={results.alerts_count}
+                      alert={results.alerts_count > 0}
                     />
                   </div>
 
@@ -265,11 +265,10 @@ function App() {
                           <div key={i} className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl flex items-start justify-between">
                             <div>
                               <div className="flex items-center space-x-2 mb-1">
-                                <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-                                  alert.severity === 'critical' ? 'bg-red-500/20 text-red-400' :
+                                <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${alert.severity === 'critical' ? 'bg-red-500/20 text-red-400' :
                                   alert.severity === 'high' ? 'bg-orange-500/20 text-orange-400' :
-                                  'bg-amber-500/20 text-amber-400'
-                                }`}>
+                                    'bg-amber-500/20 text-amber-400'
+                                  }`}>
                                   {alert.severity}
                                 </span>
                                 <h4 className="font-semibold text-white">{alert.title}</h4>
@@ -293,7 +292,7 @@ function App() {
 
                   {/* Raw Detections List */}
                   <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-slate-300">Raw YOLOv8 Detections</h3>
+                    <h3 className="text-lg font-semibold text-slate-300">Raw Detections</h3>
                     <div className="bg-[#1e293b] rounded-xl border border-slate-800 divide-y divide-slate-800/50 max-h-80 overflow-y-auto">
                       {results.detections.length > 0 ? (
                         results.detections.map((frame: any, i: number) => (
@@ -305,7 +304,7 @@ function App() {
                               </div>
                               <div>
                                 <div className="font-medium text-slate-200">
-                                  {frame.objects.map((o:any) => o.class).join(', ')}
+                                  {frame.objects.map((o: any) => o.class).join(', ')}
                                 </div>
                                 <div className="text-xs text-slate-500 mt-1">
                                   Frame {frame.frame_number} • {frame.objects_detected} object(s)
@@ -326,7 +325,7 @@ function App() {
               )}
             </AnimatePresence>
           </div>
-          
+
         </div>
       </div>
     </div>

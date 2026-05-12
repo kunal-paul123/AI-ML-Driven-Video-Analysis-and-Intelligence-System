@@ -1,0 +1,32 @@
+====================================================================================================
+                    PROJECT IMPLEMENTATION STATUS: AI-ML VIDEO INTELLIGENCE
+====================================================================================================
+
+This table tracks the current progress and roadmap for the AI/ML-Powered Video Analysis System.
+
+----------------------------------------------------------------------------------------------------
+| FEATURE CATEGORY    | REQUIREMENT                 | STATUS      | PRIORITY | NOTES               |
+|---------------------|-----------------------------|-------------|----------|---------------------|
+| Multi-Source Input  | Video File Uploads          | IMPLEMENTED | HIGH     | .mp4, .avi, .webm   |
+| Multi-Source Input  | Live RTSP/RTMP Streams      | PLANNED     | CRITICAL | For CCTV/Drones     |
+| Feature Extraction  | Object Detection (YOLOv8)   | IMPLEMENTED | HIGH     | Bboxes & Confidence |
+| AI/ML Integration   | Weapon Detection            | IMPLEMENTED | HIGH     | Adaptive Thresholds |
+| AI/ML Integration   | Behavioral Analysis         | PLANNED     | MEDIUM   | Loitering/Falling   |
+| Real-Time Analysis  | Automated Alerting Logic    | IMPLEMENTED | HIGH     | Armed Person/Crowds |
+| Real-Time Analysis  | Database Persistence        | PLANNED     | CRITICAL | Saving to Postgres  |
+| Real-Time Analysis  | Webhooks / WebSockets       | PLANNED     | MEDIUM   | Push Notifications  |
+| Output & Viz        | JSON Summary Output         | IMPLEMENTED | HIGH     | Per-frame counts    |
+| Output & Viz        | Visual Heatmaps             | PLANNED     | MEDIUM   | Activity density    |
+| Output & Viz        | Monitoring Dashboard        | PLANNED     | HIGH     | Frontend UI         |
+| Technical Infra     | DB Schema (SQLAlchemy)      | IMPLEMENTED | HIGH     | Alert/Camera Models |
+| Technical Infra     | API Docs (Swagger)          | IMPLEMENTED | HIGH     | Available at /docs  |
+----------------------------------------------------------------------------------------------------
+
+🚀 NEXT STEPS (HIGH PRIORITY):
+1. LIVE STREAM SUPPORT: Integrate RTSP/RTMP for real-time surveillance.
+2. DATABASE PERSISTENCE: Save detections and alerts to Neon DB.
+3. BEHAVIORAL ANALYSIS: Detect loitering and unusual activities.
+
+====================================================================================================
+Last Updated: 2026-05-13
+====================================================================================================
