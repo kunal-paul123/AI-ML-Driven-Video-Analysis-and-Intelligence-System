@@ -26,3 +26,6 @@ numpy==1.26.4
 
 # Utilities
 python-dateutil==2.9.0
+
+# Twilio (SMS Notifications)
+twilio

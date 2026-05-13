@@ -19,6 +19,7 @@ class FrameDetection:
     frame_number: int
     timestamp_seconds: float
     objects: list[dict]
+    screenshot_path: str | None = None
 
 
 @dataclass
@@ -116,10 +117,16 @@ def analyze_video(
                     class_counts[cls_name] = class_counts.get(cls_name, 0) + 1
 
             if frame_objects:
+                import uuid
+                filename = f"screenshot_{uuid.uuid4().hex[:8]}_{frame_idx}.jpg"
+                filepath = os.path.join("app", "uploads", "screenshots", filename)
+                cv2.imwrite(filepath, frame)
+
                 detections.append(FrameDetection(
                     frame_number=frame_idx,
                     timestamp_seconds=round(timestamp, 3),
                     objects=frame_objects,
+                    screenshot_path=filename
                 ))
 
             analyzed += 1

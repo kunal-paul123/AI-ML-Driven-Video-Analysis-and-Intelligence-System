@@ -1,11 +1,21 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 from app.api.v1 import api_router
+from app.database import engine, Base
+import app.models.alert_history  # noqa: F401 — ensures model is registered
 
+# Ensure uploads directories exist
+os.makedirs("app/uploads/screenshots", exist_ok=True)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Auto-create tables in Neon DB on startup
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("✅ Database tables verified/created")
     print("✅ VideoAI backend starting up...")
     yield
     print("🛑 VideoAI backend shutting down...")
@@ -26,6 +36,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/static", StaticFiles(directory="app/uploads"), name="static")
 
 app.include_router(api_router)
 

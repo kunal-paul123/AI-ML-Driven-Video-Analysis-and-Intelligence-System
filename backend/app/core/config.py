@@ -30,6 +30,12 @@ class Settings(BaseSettings):
     ml_confidence_threshold: float = 0.5
     ml_iou_threshold: float = 0.45
 
+    # Twilio (SMS / WhatsApp Notifications)
+    twilio_account_sid: str = ""
+    twilio_auth_token: str = ""
+    twilio_from_number: str = ""
+    twilio_to_number: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
