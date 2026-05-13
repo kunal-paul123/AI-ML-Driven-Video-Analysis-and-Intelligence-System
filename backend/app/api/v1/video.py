@@ -132,6 +132,47 @@ async def analyze_video_file(
                 "screenshot_path": context_paths,
             })
 
+    # ── Re-ID: Generate alerts for repeat/frequent persons ────────────────────
+    registry = result.person_registry
+    tracked_persons = registry.to_summary() if registry else []
+
+    if registry:
+        for person in registry.get_alert_persons():
+            alert_key = f"frequent_person_{person.person_id}"
+            if alert_key not in seen_alert_types:
+                seen_alert_types.add(alert_key)
+                generated_alerts.append({
+                    "alert_type": "frequent_person",
+                    "severity": "high",
+                    "title": f"Frequent Person Detected — {person.person_id}",
+                    "description": (
+                        f"Person {person.person_id} has been spotted {person.sighting_count} times "
+                        f"across this video (first at {_format_time(person.first_seen_timestamp)}, "
+                        f"last at {_format_time(person.last_seen_timestamp)})."
+                    ),
+                    "confidence": 0.85,
+                    "frame_number": person.last_seen_frame,
+                    "screenshot_path": person.best_screenshot,
+                })
+
+        for person in registry.get_repeat_persons():
+            if person.sighting_count < 4:  # Only yellow-level (not already red-alerted)
+                alert_key = f"repeat_person_{person.person_id}"
+                if alert_key not in seen_alert_types:
+                    seen_alert_types.add(alert_key)
+                    generated_alerts.append({
+                        "alert_type": "repeat_person",
+                        "severity": "medium",
+                        "title": f"Repeat Person — {person.person_id}",
+                        "description": (
+                            f"Person {person.person_id} has appeared {person.sighting_count} times. "
+                            f"First seen at {_format_time(person.first_seen_timestamp)}."
+                        ),
+                        "confidence": 0.75,
+                        "frame_number": person.last_seen_frame,
+                        "screenshot_path": person.best_screenshot,
+                    })
+
     # ── Save alerts to DB + Send SMS ──────────────────────────────────────────
     saved_alerts = []
     for alert in generated_alerts:
@@ -179,6 +220,16 @@ async def analyze_video_file(
         for fd in result.detections
     ]
 
+    # ── Summarize Re-ID stats ─────────────────────────────────────────────────
+    reid_summary = None
+    if registry:
+        all_persons = registry.get_all_persons()
+        reid_summary = {
+            "total_unique_persons": len(all_persons),
+            "repeat_persons": len(registry.get_repeat_persons()),
+            "frequent_persons": len(registry.get_alert_persons()),
+        }
+
     return {
         "file_id": file_id,
         "original_filename": file.filename,
@@ -192,6 +243,8 @@ async def analyze_video_file(
         "alerts_generated": saved_alerts,
         "alerts_count": len(saved_alerts),
         "detections": detections_output,
+        "tracked_persons": tracked_persons,
+        "reid_summary": reid_summary,
         "analyzed_at": datetime.utcnow().isoformat(),
     }
 

@@ -3,9 +3,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
+import sys
+
 from app.api.v1 import api_router
 from app.database import engine, Base
-import app.models.alert_history  # noqa: F401 — ensures model is registered
+import app.models.alert_history  # noqa: F401 - ensures model is registered
+
+# Fix emoji output on Windows terminals (cp1252 -> utf-8)
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 # Ensure uploads directories exist
 os.makedirs("app/uploads/screenshots", exist_ok=True)
@@ -15,16 +22,16 @@ async def lifespan(app: FastAPI):
     # Auto-create tables in Neon DB on startup
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    print("✅ Database tables verified/created")
-    print("✅ VideoAI backend starting up...")
+    print("[OK] Database tables verified/created")
+    print("[OK] VideoAI backend starting up...")
     yield
-    print("🛑 VideoAI backend shutting down...")
+    print("[STOP] VideoAI backend shutting down...")
 
 
 app = FastAPI(
     title="VideoAI Intelligence",
     version="1.0.0",
-    description="AI/ML-Driven Video Analysis — REST API",
+    description="AI/ML-Driven Video Analysis - REST API",
     docs_url="/docs",
     lifespan=lifespan,
 )

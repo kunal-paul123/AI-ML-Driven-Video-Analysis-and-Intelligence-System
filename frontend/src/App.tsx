@@ -142,7 +142,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-slate-200 p-6 font-sans selection:bg-indigo-500/30">
+    <div className="min-h-screen text-slate-200 p-6 font-sans selection:bg-indigo-500/30">
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Header */}
@@ -156,10 +156,10 @@ function App() {
               <p className="text-sm text-slate-400">AI-Powered Security Surveillance</p>
             </div>
           </div>
-          <div className="flex items-center space-x-2 text-xs text-slate-500 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700">
+          {/* <div className="flex items-center space-x-2 text-xs text-slate-500 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700">
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>System Online</span>
-          </div>
+          </div> */}
         </header>
 
         {/* Top Row: Webcam + Live Results (50/50) */}
@@ -233,15 +233,25 @@ function App() {
                     <StatCard title="Duration" value={`${results.analysis.duration_seconds}s`} />
                     <StatCard title="Classes Found" value={results.analysis.unique_classes_detected.length} />
                     <StatCard title="Alerts" value={results.alerts_count} alert={results.alerts_count > 0} />
+                    {results.reid_summary && (
+                      <>
+                        <StatCard title="Unique Persons" value={results.reid_summary.total_unique_persons} />
+                        <StatCard
+                          title="Repeat/Frequent"
+                          value={`${results.reid_summary.repeat_persons}/${results.reid_summary.frequent_persons}`}
+                          alert={results.reid_summary.frequent_persons > 0}
+                        />
+                      </>
+                    )}
                   </div>
 
                   {/* Alerts */}
-                  {results.alerts_count > 0 ? (
+                  {results.alerts_generated.filter((a: any) => a.alert_type !== 'frequent_person' && a.alert_type !== 'repeat_person').length > 0 ? (
                     <div className="space-y-2">
                       <h3 className="text-sm font-semibold flex items-center space-x-2 text-amber-400">
                         <AlertTriangle className="w-4 h-4" /><span>Security Alerts Triggered</span>
                       </h3>
-                      {results.alerts_generated.map((alert: any, i: number) => (
+                      {results.alerts_generated.filter((a: any) => a.alert_type !== 'frequent_person' && a.alert_type !== 'repeat_person').map((alert: any, i: number) => (
                         <div key={i} className={`p-4 rounded-xl border flex items-start justify-between ${severityColor(alert.severity)}`}>
                           <div>
                             <div className="flex items-center space-x-2 mb-1">
@@ -277,21 +287,44 @@ function App() {
                     </div>
                   )}
 
-                  {/* Raw Detections */}
+                  {/* Raw Detections
                   <div className="bg-[#1e293b] rounded-xl border border-slate-800 max-h-48 overflow-y-auto">
                     <div className="p-3 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wider">Raw Detections</div>
                     {results.detections.length > 0 ? results.detections.map((frame: any, i: number) => (
                       <div key={i} className="p-3 flex items-center justify-between hover:bg-slate-800/30 transition-colors border-b border-slate-800/50 last:border-0">
                         <div className="flex items-center space-x-3">
                           <span className="text-xs font-mono text-indigo-400 w-12">{frame.timestamp_seconds.toFixed(1)}s</span>
-                          <span className="text-sm text-slate-300">{frame.objects.map((o: any) => o.class).join(', ')}</span>
+                          <span className="text-sm text-slate-300">
+                            {frame.objects.map((o: any, oi: number) => (
+                              <span key={oi}>
+                                {o.class === 'person' && o.person_id ? (
+                                  <span
+                                    className={`inline-flex items-center space-x-1 mr-1 px-1.5 py-0.5 rounded text-[10px] font-bold border ${
+                                      o.tag_color === 'red'
+                                        ? 'bg-red-500/20 border-red-500/40 text-red-300'
+                                        : o.tag_color === 'yellow'
+                                        ? 'bg-yellow-500/20 border-yellow-500/40 text-yellow-300'
+                                        : 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                                    }`}
+                                  >
+                                    <span>{o.person_id}</span>
+                                    {o.sighting_count > 1 && <span>×{o.sighting_count}</span>}
+                                  </span>
+                                ) : (
+                                  <span className="mr-1">{o.class}</span>
+                                )}
+                              </span>
+                            ))}
+                          </span>
                         </div>
                         <span className="text-xs text-slate-500">{frame.objects_detected} obj</span>
                       </div>
                     )) : (
                       <div className="p-6 text-center text-slate-500 text-sm">No objects detected.</div>
                     )}
-                  </div>
+                  </div> */}
+
+
                 </motion.div>
               )}
             </AnimatePresence>
@@ -341,7 +374,7 @@ function App() {
                     <tr key={alert.id} className="hover:bg-slate-800/30 transition-colors">
                       <td className="p-4">
                         {alert.screenshot_urls && alert.screenshot_urls.length > 0 ? (
-                          <div 
+                          <div
                             className="relative w-16 h-12 rounded overflow-hidden border border-slate-700 bg-slate-800 cursor-pointer group"
                             onClick={() => setSelectedAlert(alert)}
                           >
@@ -352,7 +385,7 @@ function App() {
                               </div>
                             )}
                             <div className="absolute inset-0 bg-indigo-500/0 group-hover:bg-indigo-500/20 transition-colors flex items-center justify-center">
-                                <ImageIcon className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 drop-shadow-md transition-opacity" />
+                              <ImageIcon className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 drop-shadow-md transition-opacity" />
                             </div>
                           </div>
                         ) : (
