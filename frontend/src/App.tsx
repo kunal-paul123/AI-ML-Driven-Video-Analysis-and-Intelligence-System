@@ -136,7 +136,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-200 p-8 font-sans selection:bg-indigo-500/30">
-      <div className="max-w-5xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-8">
 
         {/* Header */}
         <header className="flex items-center justify-between pb-6 border-b border-slate-800">
@@ -152,7 +152,7 @@ function App() {
         </header>
 
         {/* Main Action Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-[#1e293b] rounded-2xl p-6 border border-slate-800 shadow-xl relative overflow-hidden">
@@ -217,7 +217,7 @@ function App() {
           </div>
 
           {/* Results Area */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-1 space-y-6">
             <AnimatePresence mode="popLayout">
               {isAnalyzing && (
                 <motion.div
