@@ -135,17 +135,17 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-slate-200 p-8 font-sans selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-bg-app text-slate-200 p-8 font-sans selection:bg-primary-500/30">
       <div className="max-w-7xl mx-auto space-y-8">
 
         {/* Header */}
-        <header className="flex items-center justify-between pb-6 border-b border-slate-800">
+        <header className="flex items-center justify-between pb-6 border-b border-border-subtle">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
-              <Shield className="w-8 h-8 text-indigo-400" />
+            <div className="p-2 bg-primary-500/10 rounded-xl border border-primary-500/20">
+              <Shield className="w-8 h-8 text-primary-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">VideoAI Intelligence</h1>
+              <h1 className="text-2xl font-bold text-white tracking-tight text-gradient">VideoAI Intelligence</h1>
               <p className="text-sm text-slate-400">Live Browser Capture Demo</p>
             </div>
           </div>
@@ -155,7 +155,7 @@ function App() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-[#1e293b] rounded-2xl p-6 border border-slate-800 shadow-xl relative overflow-hidden">
+            <div className="glass-card relative overflow-hidden">
               <h2 className="text-xl font-semibold text-white mb-2">Live Detection Test</h2>
               <p className="text-slate-400 text-sm mb-6">
                 Your browser is showing the live webcam feed. Click start to record a 10-second clip.
@@ -187,7 +187,7 @@ function App() {
               <button
                 onClick={startCapture}
                 disabled={isCapturing || isAnalyzing || !streamActive}
-                className="w-full flex items-center justify-center space-x-2 bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-700 disabled:text-slate-400 text-white py-3 px-4 rounded-xl font-medium transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                className="premium-button w-full flex items-center bg-primary py-3 rounded-lg justify-center space-x-2 shadow-lg shadow-primary-500/20"
               >
                 {isCapturing ? (
                   <>
@@ -224,11 +224,11 @@ function App() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="flex flex-col items-center justify-center h-64 bg-[#1e293b] rounded-2xl border border-slate-800 border-dashed"
+                  className="flex flex-col items-center justify-center h-64 glass-panel rounded-2xl border-dashed"
                 >
                   <div className="relative">
-                    <div className="absolute -inset-4 bg-indigo-500/20 rounded-full blur-xl animate-pulse"></div>
-                    <Shield className="w-12 h-12 text-indigo-400 animate-pulse relative z-10" />
+                    <div className="absolute -inset-4 bg-primary-500/20 rounded-full blur-xl animate-pulse"></div>
+                    <Shield className="w-12 h-12 text-primary-400 animate-pulse relative z-10" />
                   </div>
                   <p className="mt-6 text-slate-300 font-medium">Running detection inference...</p>
                   <p className="text-sm text-slate-500 mt-2">Uploading and analyzing frames.</p>
@@ -293,14 +293,14 @@ function App() {
                   {/* Raw Detections List */}
                   <div className="space-y-3">
                     <h3 className="text-lg font-semibold text-slate-300">Raw Detections</h3>
-                    <div className="bg-[#1e293b] rounded-xl border border-slate-800 divide-y divide-slate-800/50 max-h-80 overflow-y-auto">
+                    <div className="glass-panel rounded-xl divide-y divide-border-subtle max-h-80 overflow-y-auto">
                       {results.detections.length > 0 ? (
                         results.detections.map((frame: any, i: number) => (
                           <div key={i} className="p-4 flex items-center justify-between hover:bg-slate-800/30 transition-colors">
                             <div className="flex items-center space-x-4">
-                              <div className="w-12 h-12 rounded-lg bg-slate-900 border border-slate-800 flex flex-col items-center justify-center shrink-0">
+                              <div className="w-12 h-12 rounded-lg bg-slate-900/50 border border-border-subtle flex flex-col items-center justify-center shrink-0">
                                 <span className="text-xs text-slate-500">Sec</span>
-                                <span className="text-sm font-mono text-indigo-400">{frame.timestamp_seconds.toFixed(1)}</span>
+                                <span className="text-sm font-mono text-primary-400">{frame.timestamp_seconds.toFixed(1)}</span>
                               </div>
                               <div>
                                 <div className="font-medium text-slate-200">
@@ -334,7 +334,7 @@ function App() {
 
 function StatCard({ title, value, alert = false }: { title: string, value: string | number, alert?: boolean }) {
   return (
-    <div className={`p-4 rounded-xl border ${alert ? 'bg-red-500/10 border-red-500/20' : 'bg-[#1e293b] border-slate-800'}`}>
+    <div className={`p-4 rounded-xl border transition-all duration-300 ${alert ? 'bg-red-500/10 border-red-500/20 shadow-lg shadow-red-500/5' : 'glass-panel hover:border-primary-500/30'}`}>
       <div className="text-xs text-slate-400 mb-1">{title}</div>
       <div className={`text-2xl font-semibold tracking-tight ${alert ? 'text-red-400' : 'text-white'}`}>
         {value}
