@@ -103,18 +103,43 @@ alembic upgrade head
 
 ---
 
-## 📡 API Endpoints
+## 📊 Implementation Status
 
+The project is currently in **Phase 1 (Core Engine & File Analysis)**. The intelligent video analysis engine is functional and can process uploaded security footage to detect threats.
+
+### ✅ What's Working Now
+*   **Intelligent Analysis**: YOLOv8 integration for high-accuracy object detection.
+*   **Security Alerts**: Automated logic to detect armed persons, weapons, and crowd surges.
+*   **Multi-Format Support**: Processes `.mp4`, `.avi`, `.mkv`, and `.webm` files.
+*   **Backend API**: Fast, asynchronous FastAPI server with auto-generated Swagger docs.
+*   **Cloud Database**: Fully configured PostgreSQL (Neon DB) with SQLAlchemy models.
+
+### 📡 Active API Endpoints
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/health` | Health check |
-| POST | `/api/v1/auth/register` | Register user |
-| POST | `/api/v1/auth/login` | Login → JWT token |
-| GET | `/api/v1/cameras/` | List all cameras |
-| POST | `/api/v1/cameras/` | Add new camera |
-| GET | `/api/v1/alerts/` | List alerts (filterable) |
-| POST | `/api/v1/alerts/` | Create alert |
-| PATCH | `/api/v1/alerts/{id}` | Acknowledge / resolve |
-| GET | `/api/v1/analytics/overview` | System stats |
-| GET | `/api/v1/analytics/timeline` | Alert timeline chart |
-| GET | `/api/v1/analytics/heatmap/{id}` | Activity heatmap points |
+| GET | `/health` | System health check |
+| POST | `/api/v1/video/analyze` | Upload video for AI threat analysis |
+
+---
+
+## 🚀 Development Roadmap
+
+### 🔴 High Priority (Current Focus)
+- [ ] **Live Stream Integration**: Support for RTSP/RTMP/HLS feeds from CCTV/Drones.
+- [ ] **Database Persistence**: Saving all detected events and alerts to PostgreSQL.
+- [ ] **Frontend Dashboard**: Real-time monitoring UI with Framer Motion animations.
+
+### 🟡 Medium Priority
+- [ ] **Behavioral Analysis**: Identifying loitering, falling, or restricted area intrusion.
+- [ ] **WebSockets**: Real-time "Push" notifications for instant security alerts.
+- [ ] **Visual Heatmaps**: Activity density maps for better intelligence gathering.
+
+---
+
+## 🛠️ Technology Stack
+*   **Frontend**: React 19, Vite, Tailwind CSS 4, Framer Motion.
+*   **Backend**: FastAPI, Python 3, SQLAlchemy, Uvicorn.
+*   **AI/ML**: YOLOv8 (Ultralytics), OpenCV.
+*   **Database**: PostgreSQL (Neon DB).
+
+For more details, see [TECH_STACK.txt](./TECH_STACK.txt) and [PROJECT_STATUS.txt](./PROJECT_STATUS.txt).
